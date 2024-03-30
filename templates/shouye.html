@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>皮肤病诊断网站</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        button {
+            padding: 5px 15px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .login {
+            background-color: #0b44df;
+            color: #fff;
+        }
+
+        .register {
+            background-color: #ffffff;
+            color: #0a0a0a;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px;
+            background-color: #fff;
+            flex: 1;
+            text-align: center;
+        }
+
+        .content-text {
+            flex: 0.6; /* 调整左侧内容区域大小 */
+            padding: 20px;
+            align-items: center;
+
+        }
+
+        .content-text h1 {
+            font-size: 55px; /* 调整字体大小 */
+            text-align: center;
+        }
+
+        .content-text p {
+            font-size: 25px; /* 调整字体大小 */
+        }
+
+        .content-image {
+            flex: 0.38; /* 调整右侧图片区域大小 */
+            padding: 20px;
+        }
+
+        .content-button {
+            padding: 10px 30px;
+            border: none;
+            background-color: #2814e0;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            display: inline-flex;
+            margin: 0 auto;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999; /* 确保模态框位于最前面 */
+        }
+
+        .modal-content {
+            background-color: #f4f4f4;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333; /* 文本标签颜色 */
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+        .register-link {
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .register-link:hover {
+            color: #2980b9;
+        }
+
+
+        /* 省略部分样式代码 */
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h2 style="margin-left: 20px;">皮肤病诊断网站</h2>
+    <nav>
+        <a href="{{ url_for('AI') }}">疾病诊断</a>
+        <a href="{{ url_for('bing')}}">病种展示</a>
+        <a href="{{ url_for('chat')}}">AI聊天</a>
+        <a href="{{url_for('QA')}}">常见问题</a>
+        <a href="{{url_for('people')}}">联系我们</a>
+    </nav>
+    <div style="margin-right: 20px;">
+        <button class="login">登录</button>
+        <button class="register">注册</button>
+    </div>
+</header>
+<!-- 模态框：登录 -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>用户登录</h2>
+      <div>
+        <label for="loginUsername">用户名：</label><br>
+        <input type="text" id="loginUsername" placeholder="请输入用户名">
+      </div>
+      <div>
+        <label for="loginPassword">密码：</label><br>
+        <input type="password" id="loginPassword" placeholder="请输入密码">
+      </div>
+      <button id="loginSubmit">登录</button>
+    </div>
+  </div>
+
+  <!-- 模态框：注册 -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>用户注册</h2>
+      <div>
+        <label for="registerUsername">用户名：</label><br>
+        <input type="text" id="registerUsername" placeholder="请输入用户名">
+      </div>
+      <div>
+        <label for="registerPassword">密码：</label><br>
+
+        <input type="password" id="registerPassword" placeholder="请输入密码" minlength="6" required>
+      </div>
+      <div>
+        <label for="confirmPassword">确认密码：</label><br>
+        <input type="password" id="confirmPassword" placeholder="请再次输入密码" required>
+      </div>
+      <button id="registerSubmit">注册</button>
+    </div>
+  </div>
+
+  <!-- 其他部分代码 -->
+
+  <script>
+      // 用户信息数组
+      var users = [];
+
+      // 点击登录按钮时显示登录模态框
+      var loginBtn = document.querySelector('.login');
+      loginBtn.addEventListener('click', function() {
+          var loginModal = document.getElementById('loginModal');
+          loginModal.style.display = 'block';
+      });
+
+      // 点击注册按钮时显示注册模态框
+      var registerBtn = document.querySelector('.register');
+      registerBtn.addEventListener('click', function() {
+          var registerModal = document.getElementById('registerModal');
+          registerModal.style.display = 'block';
+      });
+
+      // 点击模态框上的关闭按钮时关闭模态框
+var closeBtns = document.querySelectorAll('.close');
+closeBtns.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var modal = btn.closest('.modal');
+    modal.style.display = 'none';
+  });
+
+  // 设置关闭按钮位置
+  btn.style.position = 'absolute';
+  btn.style.top = '170px';
+  btn.style.right = '600px';
+});
+
+      // 注册按钮点击事件：将用户名和密码添加到数组中
+    var registerSubmitBtn = document.getElementById('registerSubmit');
+    registerSubmitBtn.addEventListener('click', function() {
+    var username = document.getElementById('registerUsername').value;
+    var password = document.getElementById('registerPassword').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    // 检查用户名不为空
+    if (username === "") {
+        alert('用户名不能为空！');
+        return; // 如果用户名为空，停止函数执行
+    }
+    // 检查密码长度
+  if (password.length < 6) {
+    alert('密码至少需要6位！');
+    return; // 如果密码不符合要求，停止函数执行
+  }
+  // 检查两次输入的密码是否一致
+  if (password !== confirmPassword) {
+        alert('两次输入的密码不一致，请重新输入！');
+        return; // 如果两次输入的密码不一致，停止函数执行
+    }
+
+    // 密码一致，实现注册逻辑
+    // ...
+    users.push({ username: username, password: password });
+    alert('注册成功！用户名：' + username + '，密码：' + password);
+
+    var registerModal = document.getElementById('registerModal');
+    registerModal.style.display = 'none'; // 隐藏注册模态框
+});
+    // 登录按钮点击事件：检查用户名和密码是否存在于数组中
+var loginSubmitBtn = document.getElementById('loginSubmit');
+loginSubmitBtn.addEventListener('click', function() {
+    var username = document.getElementById('loginUsername').value;
+    var password = document.getElementById('loginPassword').value;
+    var foundUser = users.find(function(user) {
+        return user.username === username;
+    });
+    if (foundUser) {
+        if (foundUser.password === password) {
+            alert('登录成功！欢迎，' + username + '！');
+
+            // 替换为登录的用户名
+            var userInfo = document.createElement('span');
+            userInfo.innerText = username;
+
+            // 隐藏登录按钮
+            loginBtn.style.display = 'none';
+
+            // 替换登录按钮为用户名
+            var container = document.querySelector('div[style="margin-right: 20px;"]');
+            container.insertBefore(userInfo, container.firstChild);
+
+            // 隐藏注册按钮
+            registerBtn.style.display = 'none';
+
+            // 进行页面跳转或其他操作
+
+            var loginModal = document.getElementById('loginModal');
+            loginModal.style.display = 'none'; // 隐藏登录模态框
+        } else {
+            alert('密码错误，请重试！'); // 密码错误
+        }
+    } else {
+        alert('用户名错误，请重试！'); // 用户名错误
+        var confirmRegister = confirm('用户未注册，是否前往注册页面？'); // 用户未注册，确认是否前往注册页面
+        if (confirmRegister) {
+            var registerModal = document.getElementById('registerModal');
+            registerModal.style.display = 'block'; // 显示注册模态框
+            var loginModal = document.getElementById('loginModal');
+            loginModal.style.display = 'none'; // 隐藏登录模态框
+        }
+    }
+});
+  </script>
+
+<div class="main-content">
+    <div class="content-text">
+        <h1>上传图片进行皮肤病诊断</h1>
+        <p>上传一张皮肤病症状图片，点击下方的诊断按钮，即可得出诊断结果和建议。</p>
+        <a href="{{ url_for('AI') }}"><button class="content-button">开始诊断</button></a>
+    </div>
+    <div class="content-image">
+        <img src="{{ url_for('static', filename='girl.jpg') }}"  alt="皮肤病诊断图" style="max-width: 100%;">
+    </div>
+</div>
+
+</body>
+</html>
