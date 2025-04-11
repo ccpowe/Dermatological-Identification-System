@@ -1,5 +1,5 @@
 # Dermatological-Identification-System
-A skin disease identification web page that can identify 25 common skin diseases and ask medical questions through API call large models
+A skin disease identification web page that can identify 6 common skin diseases and ask medical questions through API call large models
 
 ### 皮肤病的快速识别：
 核心功能是利用深度学习技术快速准确地识别皮肤病。用户只需通过前端界面上传皮肤的照片，即可实时处理并提供诊断结果。
